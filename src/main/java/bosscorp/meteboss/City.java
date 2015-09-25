@@ -57,7 +57,7 @@ public class City
 	{
 		return mName;
 	}
-	
+
 	public String getCountry()
 	{
 		return mCountry;

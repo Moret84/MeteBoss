@@ -11,6 +11,7 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AdapterView;
 import android.widget.Toast;
+import android.content.Intent;
 
 public class CityListActivity extends ListActivity
 {
@@ -18,31 +19,38 @@ public class CityListActivity extends ListActivity
 	private ListView mListView;
 	private ArrayAdapter<City> mAdapter;
 
+	public final static String CITY = "bosscorp.meteboss.city";
+
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.main);
 
 		mCityList = new ArrayList<City>();
 
 		mCityList.add(new City("Michelville", "France"));
 		mCityList.add(new City("Sardouland", "France"));
 
-		mListView = (ListView) findViewById(android.R.id.list);
-		mAdapter = new ArrayAdapter<City>(this, R.layout.city_list);
+		mCityList.get(0).setTemperature("26");
+		mCityList.get(0).setPressure("1013");
+		mCityList.get(0).setWindSpeed("90");
+		mCityList.get(0).setWindDirection("N");
+		mCityList.get(0).setLastFetch("Avant hier");
+
+		mListView = getListView();
+		mAdapter = new ArrayAdapter<City>(this, android.R.layout.simple_list_item_1, android.R.id.text1, mCityList);
 
 		mListView.setAdapter(mAdapter);
 		registerForContextMenu(mListView);
-		mAdapter.addAll(mCityList);
+	}
 
-		mListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
-		{
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View view, int position, long id)
-			{
-			}
-		});
+	@Override
+	public void onListItemClick(ListView l, View v, int position, long id)
+	{
+		Intent intent = new Intent(this, CityActivity.class);
+		City selectedCity = mCityList.get(position);
+		intent.putExtra(CITY, selectedCity);
+		startActivity(intent);
 	}
 
 	@Override
@@ -64,8 +72,11 @@ public class CityListActivity extends ListActivity
 
 	private void removeCity(int id)
 	{
-		mAdapter.remove(mAdapter.getItem(id));
-		Toast.makeText(this, mCityList.get(id).getName() + " has been removed", Toast.LENGTH_SHORT).show();
+		String name = mCityList.get(id).getName();
+
 		mCityList.remove(id);
+		mAdapter.notifyDataSetChanged();
+
+		Toast.makeText(this, name + " has been removed", Toast.LENGTH_SHORT).show();
 	}
 }

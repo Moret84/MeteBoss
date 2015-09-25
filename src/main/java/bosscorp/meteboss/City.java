@@ -1,16 +1,17 @@
 package bosscorp.meteboss;
 
 import java.util.Date;
+import java.io.Serializable;
 
-public class City
+public class City implements Serializable
 {
 	private String mName;
 	private String mCountry;
-	private Date mLastFetch;
-	private double mWindSpeed;
+	private String mLastFetch;
+	private String mWindSpeed;
 	private String mWindDirection;
-	private double mPressure;
-	private double mTemperature;
+	private String mPressure;
+	private String mTemperature;
 
 	public City(String name, String country)
 	{
@@ -28,12 +29,12 @@ public class City
 		mCountry = country;
 	}
 
-	public void setLastFetch(Date date)
+	public void setLastFetch(String date)
 	{
 		mLastFetch = date;
 	}
 
-	public void setWindSpeed(double windSpeed)
+	public void setWindSpeed(String windSpeed)
 	{
 		mWindSpeed = windSpeed;
 	}
@@ -43,12 +44,12 @@ public class City
 		mWindDirection = windDirection;
 	}
 
-	public void setPressure(double pressure)
+	public void setPressure(String pressure)
 	{
 		mPressure = pressure;
 	}
 
-	public void setTemperature(double temperature)
+	public void setTemperature(String temperature)
 	{
 		mTemperature = temperature;
 	}
@@ -61,6 +62,31 @@ public class City
 	public String getCountry()
 	{
 		return mCountry;
+	}
+
+	public String getWindSpeed()
+	{
+		return mWindSpeed;
+	}
+
+	public String getWindDirection()
+	{
+		return mWindDirection;
+	}
+
+	public String getPressure()
+	{
+		return mPressure;
+	}
+
+	public String getTemperature()
+	{
+		return mTemperature;
+	}
+
+	public String getLastUpdate()
+	{
+		return mLastFetch;
 	}
 
 	public String toString()

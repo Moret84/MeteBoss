@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MeteBoss</string>
+	<string name="city">Ville</string>
+	<string name="country">Pays</string>
+	<string name="wind">Vent</string>
+	<string name="pressure">Pression</string>
+	<string name="temperature">Température</string>
+	<string name="lastUpdate">Date</string>
+</resources>

@@ -4,44 +4,35 @@
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
 	android:columnCount="2"
-	android:rowCount="7"
-	android:rowOrderPreserved="false"
-	android:useDefaultMargins="true">
+	android:rowCount="7" >
 
 	<TextView
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:textAppearance="?android:attr/textAppearanceLarge"
 		android:text="@string/city"
 		android:id="@+id/cityLabel"
+		style="@style/label"
 		android:layout_row="0"
 		android:layout_column="0" />
 
 	<TextView
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
 		android:id="@+id/cityValue"
-		android:textAppearance="?android:attr/textAppearanceMedium"
+		style="@style/value"
 		android:layout_row="0"
 		android:layout_column="1" />
 
 	<TextView
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:textAppearance="?android:attr/textAppearanceLarge"
 		android:text="@string/country"
 		android:id="@+id/countryLabel"
+		style="@style/label"
 		android:layout_row="1"
 		android:layout_column="0" />
 
 	<TextView
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
 		android:id="@+id/countryValue"
-		android:textAppearance="?android:attr/textAppearanceMedium"
+		style="@style/value"
 		android:layout_row="1"
 		android:layout_column="1" />
 
+	<!-- The splitting line -->
 	<View
 		android:background="#ffffff"
 		android:layout_width="fill_parent"
@@ -50,64 +41,57 @@
 		android:layout_row="2"
 		android:layout_column="0"
 		android:layout_centerVertical ="true" />
+	<!-- /The splitting line -->
 
 	<TextView
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
 		android:id="@+id/windLabel"
 		android:text="@string/wind"
+		style="@style/label"
 		android:layout_row="3"
 		android:layout_column="0" />
 
 	<TextView
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
 		android:id="@+id/windValue"
+		style="@style/value"
 		android:layout_row="3"
 		android:layout_column="1" />
 
 	<TextView
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
 		android:id="@+id/pressureLabel"
 		android:text="@string/pressure"
+		style="@style/label"
 		android:layout_row="4"
 		android:layout_column="0" />
 
 	<TextView
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
 		android:id="@+id/pressureValue"
+		style="@style/value"
 		android:layout_row="4"
 		android:layout_column="1" />
 
 	<TextView
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
 		android:text="@string/temperature"
 		android:id="@+id/temperatureLabel"
+		style="@style/label"
 		android:layout_row="5"
 		android:layout_column="0" />
 
 	<TextView
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
 		android:id="@+id/temperatureValue"
+		style="@style/value"
 		android:layout_row="5"
 		android:layout_column="1" />
 
 	<TextView
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
 		android:text="@string/lastUpdate"
 		android:id="@+id/lastUpdateLabel"
+		style="@style/label"
 		android:layout_row="6"
 		android:layout_column="0" />
 
 	<TextView
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
 		android:id="@+id/lastUpdateValue"
+		style="@style/value"
 		android:layout_row="6"
 		android:layout_column="1" />
 

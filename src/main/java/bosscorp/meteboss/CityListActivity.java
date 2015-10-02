@@ -12,6 +12,9 @@ import android.widget.ArrayAdapter;
 import android.widget.AdapterView;
 import android.widget.Toast;
 import android.content.Intent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 public class CityListActivity extends ListActivity
 {
@@ -51,6 +54,33 @@ public class CityListActivity extends ListActivity
 		City selectedCity = mCityList.get(position);
 		intent.putExtra(CITY, selectedCity);
 		startActivity(intent);
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu)
+	{
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.menu, menu);
+		return super.onCreateOptionsMenu(menu);
+	}
+
+	private void openAdd()
+	{
+		Intent intent = new Intent(this, AddCityActivity.class);
+		startActivity(intent);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+		switch (item.getItemId())
+		{
+			case R.id.addCity:
+				openAdd();
+				return true;
+			default:
+				return super.onOptionsItemSelected(item);
+		}
 	}
 
 	@Override

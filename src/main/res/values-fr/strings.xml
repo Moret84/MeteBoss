@@ -7,4 +7,7 @@
 	<string name="pressure">Pression</string>
 	<string name="temperature">Température</string>
 	<string name="lastUpdate">Date</string>
+	<string name="addCity">Ajouter</string>
+	<string name="cityActivityTitle">Détails</string>
+	<string name="addCityTitle">Ajouter ville</string>
 </resources>

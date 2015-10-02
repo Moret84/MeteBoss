@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+j?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">MeteBoss</string>
 	<string name="city">City</string>
@@ -7,4 +7,7 @@
 	<string name="pressure">Pressure</string>
 	<string name="temperature">Temperature</string>
 	<string name="lastUpdate">Last Update</string>
+	<string name="addCity">Add</string>
+	<string name="cityActivityTitle">Details</string>
+	<string name="addCityTitle">Add city</string>
 </resources>

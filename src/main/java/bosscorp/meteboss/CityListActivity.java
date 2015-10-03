@@ -15,21 +15,39 @@ import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.app.ProgressDialog;
+import android.os.AsyncTask;
+import java.lang.InterruptedException;
 
 public class CityListActivity extends ListActivity
 {
-	private ArrayList<City> mCityList;
+	private ArrayList<City> mCityList = new ArrayList<City>();
 	private ListView mListView;
 	private ArrayAdapter<City> mAdapter;
 
 	public final static String CITY = "bosscorp.meteboss.city";
+	public final static int ADD_CITY = 1;
+
+	private void removeCity(int id)
+	{
+		String name = mCityList.get(id).getName();
+
+		mCityList.remove(id);
+		mAdapter.notifyDataSetChanged();
+
+		Toast.makeText(this, name + getResources().getString(R.string.removeToast), Toast.LENGTH_SHORT).show();
+	}
+
+	private void openAdd()
+	{
+		Intent intent = new Intent(this, AddCityActivity.class);
+		startActivityForResult(intent, ADD_CITY);
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-
-		mCityList = new ArrayList<City>();
 
 		mCityList.add(new City("Michelville", "France"));
 		mCityList.add(new City("Sardouland", "France"));
@@ -64,11 +82,6 @@ public class CityListActivity extends ListActivity
 		return super.onCreateOptionsMenu(menu);
 	}
 
-	private void openAdd()
-	{
-		Intent intent = new Intent(this, AddCityActivity.class);
-		startActivity(intent);
-	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
@@ -78,8 +91,25 @@ public class CityListActivity extends ListActivity
 			case R.id.addCity:
 				openAdd();
 				return true;
+			case R.id.refresh:
+				new FetchData().execute(mCityList);
+
 			default:
 				return super.onOptionsItemSelected(item);
+		}
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data)
+	{
+		if (resultCode == RESULT_OK)
+		{
+			if (requestCode == ADD_CITY)
+			{
+				City city = (City) data.getSerializableExtra(CITY);
+				mCityList.add(city);
+				mAdapter.notifyDataSetChanged();
+			}
 		}
 	}
 
@@ -100,13 +130,35 @@ public class CityListActivity extends ListActivity
 		return true;
 	}
 
-	private void removeCity(int id)
+	private class FetchData extends AsyncTask<ArrayList<City>, Void, Void>
 	{
-		String name = mCityList.get(id).getName();
+		private ProgressDialog mProgress;
 
-		mCityList.remove(id);
-		mAdapter.notifyDataSetChanged();
+		protected void onPreExecute()
+		{
+			mProgress = new ProgressDialog(CityListActivity.this);
+			mProgress.setMessage(getString(R.string.refreshing));
+			mProgress.show();
+		}
 
-		Toast.makeText(this, name + " has been removed", Toast.LENGTH_SHORT).show();
+		protected Void doInBackground(ArrayList<City>... cities)
+		{
+			try
+			{
+				Thread.sleep(5000);
+			}
+			catch(InterruptedException e)
+			{
+			}
+			return null;
+		}
+
+
+		protected void onPostExecute(Void result)
+		{
+			if (mProgress.isShowing())
+				mProgress.dismiss();
+			Toast.makeText(CityListActivity.this, getResources().getString(R.string.refreshed), Toast.LENGTH_SHORT).show();
+		}
 	}
 }

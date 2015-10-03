@@ -10,4 +10,10 @@
 	<string name="addCity">Ajouter</string>
 	<string name="cityActivityTitle">Détails</string>
 	<string name="addCityTitle">Ajouter ville</string>
+	<string name="emptyFieldTitle">Champ(s) vide(s)</string>
+	<string name="emptyFieldMessage">Vous devez remplir les deux champs</string>
+	<string name="removeToast">a été supprimée</string>
+	<string name="refresh">Actualiser</string>
+	<string name="refreshed">Les données ont été actualisées.</string>
+	<string name="refreshing">Actualisation...</string>
 </resources>

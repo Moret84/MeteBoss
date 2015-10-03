@@ -1,4 +1,4 @@
-j?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">MeteBoss</string>
 	<string name="city">City</string>
@@ -10,4 +10,10 @@ j?xml version="1.0" encoding="utf-8"?>
 	<string name="addCity">Add</string>
 	<string name="cityActivityTitle">Details</string>
 	<string name="addCityTitle">Add city</string>
+	<string name="emptyFieldTitle">Empty Field(s)</string>
+	<string name="emptyFieldMessage">You have to fill up the two fields</string>
+	<string name="removeToast">has been removed</string>
+	<string name="refresh">Refresh</string>
+	<string name="refreshed">Datas have been refreshed</string>
+	<string name="refreshing">Refreshing...</string>
 </resources>

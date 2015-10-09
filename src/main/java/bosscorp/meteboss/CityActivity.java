@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.content.Intent;
 import android.widget.TextView;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 public class CityActivity extends Activity
 {
@@ -22,13 +25,13 @@ public class CityActivity extends Activity
 		text.setText(city.getCountry());
 
 		text = (TextView) findViewById(R.id.windValue);
-		text.setText(city.getWindSpeed() + " km/h (dir. " + city.getWindDirection() + ")");
+		text.setText(city.getWind());
 
 		text = (TextView) findViewById(R.id.pressureValue);
-		text.setText(city.getPressure() + " hPa");
+		text.setText(city.getPressure());
 
 		text = (TextView) findViewById(R.id.temperatureValue);
-		text.setText(city.getTemperature() + " °C");
+		text.setText(city.getTemperature());
 
 		text = (TextView) findViewById(R.id.lastUpdateValue);
 		text.setText(city.getLastUpdate());

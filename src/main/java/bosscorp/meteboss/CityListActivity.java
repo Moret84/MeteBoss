@@ -1,29 +1,35 @@
 package bosscorp.meteboss;
 
+import android.app.ProgressDialog;
 import android.app.ListActivity;
-import java.util.ArrayList;
 import android.os.Bundle;
+import android.os.AsyncTask;
 import android.view.ContextMenu;
 import android.view.View;
-import android.widget.ListView;
 import android.view.MenuItem;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.widget.ArrayAdapter;
-import android.widget.AdapterView;
-import android.widget.Toast;
-import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.app.ProgressDialog;
-import android.os.AsyncTask;
+import android.widget.ListView;
+import android.widget.ArrayAdapter;
+import android.widget.AdapterView;
+import android.widget.Toast;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.BroadcastReceiver;
+import android.util.Log;
 import java.lang.InterruptedException;
+import java.util.List;
+import java.util.ArrayList;
 
 public class CityListActivity extends ListActivity
 {
 	private ArrayList<City> mCityList = new ArrayList<City>();
 	private ListView mListView;
 	private ArrayAdapter<City> mAdapter;
+	private IWeatherWSClient mWSClient;
 
 	public final static String CITY = "bosscorp.meteboss.city";
 	public final static int ADD_CITY = 1;
@@ -44,6 +50,25 @@ public class CityListActivity extends ListActivity
 		startActivityForResult(intent, ADD_CITY);
 	}
 
+	private void refresh()
+	{
+		for(City c : mCityList)
+		{
+			List<String> results = mWSClient.refresh(c.getName(), c.getCountry());
+			if(results != null && results.size() == 4)
+			{
+				c.setWind(results.get(0));
+				c.setTemperature(results.get(1));
+				c.setPressure(results.get(2));
+				c.setLastFetch(results.get(3));
+			}
+			else
+			{
+				Log.e("refresh()", "null results for " + c.getName() + ", " + c.getCountry());
+			}
+		}
+	}
+
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -51,15 +76,13 @@ public class CityListActivity extends ListActivity
 
 		mCityList.add(new City("Michelville", "France"));
 		mCityList.add(new City("Sardouland", "France"));
-
-		mCityList.get(0).setTemperature("26");
-		mCityList.get(0).setPressure("1013");
-		mCityList.get(0).setWindSpeed("90");
-		mCityList.get(0).setWindDirection("N");
-		mCityList.get(0).setLastFetch("Avant hier");
+		mCityList.add(new City("Lyon", "France"));
 
 		mListView = getListView();
 		mAdapter = new ArrayAdapter<City>(this, android.R.layout.simple_list_item_1, android.R.id.text1, mCityList);
+
+		//Change this line to change the web service
+		mWSClient = new WSXGlobalWeatherClient();
 
 		mListView.setAdapter(mAdapter);
 		registerForContextMenu(mListView);
@@ -92,7 +115,7 @@ public class CityListActivity extends ListActivity
 				openAdd();
 				return true;
 			case R.id.refresh:
-				new FetchData().execute(mCityList);
+				new FetchData().execute();
 
 			default:
 				return super.onOptionsItemSelected(item);
@@ -124,13 +147,13 @@ public class CityListActivity extends ListActivity
 	public boolean onContextItemSelected(MenuItem item)
 	{
 		if(item.getTitle() == "Remove")
-			removeCity(item.getItemId());
+			removeCity(((AdapterView.AdapterContextMenuInfo) item.getMenuInfo()).position);
 		else
 			return false;
 		return true;
 	}
 
-	private class FetchData extends AsyncTask<ArrayList<City>, Void, Void>
+	private class FetchData extends AsyncTask<Void, Void, Void>
 	{
 		private ProgressDialog mProgress;
 
@@ -141,18 +164,11 @@ public class CityListActivity extends ListActivity
 			mProgress.show();
 		}
 
-		protected Void doInBackground(ArrayList<City>... cities)
+		protected Void doInBackground(Void... input)
 		{
-			try
-			{
-				Thread.sleep(5000);
-			}
-			catch(InterruptedException e)
-			{
-			}
+			refresh();
 			return null;
 		}
-
 
 		protected void onPostExecute(Void result)
 		{

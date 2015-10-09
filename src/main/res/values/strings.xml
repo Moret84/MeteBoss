@@ -12,7 +12,7 @@
 	<string name="addCityTitle">Add city</string>
 	<string name="emptyFieldTitle">Empty Field(s)</string>
 	<string name="emptyFieldMessage">You have to fill up the two fields</string>
-	<string name="removeToast">has been removed</string>
+	<string name="removeToast">&#160;has been removed</string>
 	<string name="refresh">Refresh</string>
 	<string name="refreshed">Datas have been refreshed</string>
 	<string name="refreshing">Refreshing...</string>

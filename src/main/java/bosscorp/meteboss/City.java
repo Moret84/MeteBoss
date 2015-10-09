@@ -8,8 +8,7 @@ public class City implements Serializable
 	private String mName;
 	private String mCountry;
 	private String mLastFetch;
-	private String mWindSpeed;
-	private String mWindDirection;
+	private String mWind;
 	private String mPressure;
 	private String mTemperature;
 
@@ -34,14 +33,9 @@ public class City implements Serializable
 		mLastFetch = date;
 	}
 
-	public void setWindSpeed(String windSpeed)
+	public void setWind(String wind)
 	{
-		mWindSpeed = windSpeed;
-	}
-
-	public void setWindDirection(String windDirection)
-	{
-		mWindDirection = windDirection;
+		mWind = wind;
 	}
 
 	public void setPressure(String pressure)
@@ -64,14 +58,9 @@ public class City implements Serializable
 		return mCountry;
 	}
 
-	public String getWindSpeed()
+	public String getWind()
 	{
-		return mWindSpeed;
-	}
-
-	public String getWindDirection()
-	{
-		return mWindDirection;
+		return mWind;
 	}
 
 	public String getPressure()
@@ -93,5 +82,4 @@ public class City implements Serializable
 	{
 		return getName() + ", " + getCountry();
 	}
-
 }

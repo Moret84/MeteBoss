@@ -3,7 +3,6 @@ package bosscorp.meteboss;
 import android.app.ProgressDialog;
 import android.app.ListActivity;
 import android.os.Bundle;
-import android.os.AsyncTask;
 import android.view.ContextMenu;
 import android.view.View;
 import android.view.MenuItem;
@@ -22,6 +21,7 @@ import android.content.BroadcastReceiver;
 import android.util.Log;
 import java.lang.InterruptedException;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.ArrayList;
 
 public class CityListActivity extends ListActivity
@@ -29,10 +29,10 @@ public class CityListActivity extends ListActivity
 	private ArrayList<City> mCityList = new ArrayList<City>();
 	private ListView mListView;
 	private ArrayAdapter<City> mAdapter;
-	private IWeatherWSClient mWSClient;
 
 	public final static String CITY = "bosscorp.meteboss.city";
 	public final static int ADD_CITY = 1;
+	public final static int REFRESH_CURRENT_CITY = 2;
 
 	private void removeCity(int id)
 	{
@@ -50,39 +50,20 @@ public class CityListActivity extends ListActivity
 		startActivityForResult(intent, ADD_CITY);
 	}
 
-	private void refresh()
-	{
-		for(City c : mCityList)
-		{
-			List<String> results = mWSClient.refresh(c.getName(), c.getCountry());
-			if(results != null && results.size() == 4)
-			{
-				c.setWind(results.get(0));
-				c.setTemperature(results.get(1));
-				c.setPressure(results.get(2));
-				c.setLastFetch(results.get(3));
-			}
-			else
-			{
-				Log.e("refresh()", "null results for " + c.getName() + ", " + c.getCountry());
-			}
-		}
-	}
-
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 
-		mCityList.add(new City("Michelville", "France"));
-		mCityList.add(new City("Sardouland", "France"));
+		mCityList.add(new City("Brest", "France"));
+		mCityList.add(new City("Marseille", "France"));
+		mCityList.add(new City("Montreal", "Canada"));
+		mCityList.add(new City("Istanbul", "Turkey"));
+		mCityList.add(new City("Seoul", "Korea"));
 		mCityList.add(new City("Lyon", "France"));
 
 		mListView = getListView();
 		mAdapter = new ArrayAdapter<City>(this, android.R.layout.simple_list_item_1, android.R.id.text1, mCityList);
-
-		//Change this line to change the web service
-		mWSClient = new WSXGlobalWeatherClient();
 
 		mListView.setAdapter(mAdapter);
 		registerForContextMenu(mListView);
@@ -94,7 +75,7 @@ public class CityListActivity extends ListActivity
 		Intent intent = new Intent(this, CityActivity.class);
 		City selectedCity = mCityList.get(position);
 		intent.putExtra(CITY, selectedCity);
-		startActivity(intent);
+		startActivityForResult(intent, REFRESH_CURRENT_CITY);
 	}
 
 	@Override
@@ -115,7 +96,7 @@ public class CityListActivity extends ListActivity
 				openAdd();
 				return true;
 			case R.id.refresh:
-				new FetchData().execute();
+				new GetData(this).execute(mCityList.toArray(new City[mCityList.size()]));
 
 			default:
 				return super.onOptionsItemSelected(item);
@@ -127,11 +108,29 @@ public class CityListActivity extends ListActivity
 	{
 		if (resultCode == RESULT_OK)
 		{
-			if (requestCode == ADD_CITY)
+			City city = (City) data.getSerializableExtra(CITY);
+
+			switch(requestCode)
 			{
-				City city = (City) data.getSerializableExtra(CITY);
-				mCityList.add(city);
-				mAdapter.notifyDataSetChanged();
+				case ADD_CITY:
+					mCityList.add(city);
+					mAdapter.notifyDataSetChanged();
+				case REFRESH_CURRENT_CITY:
+					if(city != null)
+					{
+						ListIterator<City> it = mCityList.listIterator();
+						City c;
+						while (it.hasNext())
+						{
+							c = it.next();
+							if(c.getName().equals(city.getName()) && c.getCountry().equals(city.getCountry()))
+							{
+								System.out.println("Ça pèse");
+								it.set(city);
+								mAdapter.notifyDataSetChanged();
+							}
+						}
+					}
 			}
 		}
 	}
@@ -153,28 +152,4 @@ public class CityListActivity extends ListActivity
 		return true;
 	}
 
-	private class FetchData extends AsyncTask<Void, Void, Void>
-	{
-		private ProgressDialog mProgress;
-
-		protected void onPreExecute()
-		{
-			mProgress = new ProgressDialog(CityListActivity.this);
-			mProgress.setMessage(getString(R.string.refreshing));
-			mProgress.show();
-		}
-
-		protected Void doInBackground(Void... input)
-		{
-			refresh();
-			return null;
-		}
-
-		protected void onPostExecute(Void result)
-		{
-			if (mProgress.isShowing())
-				mProgress.dismiss();
-			Toast.makeText(CityListActivity.this, getResources().getString(R.string.refreshed), Toast.LENGTH_SHORT).show();
-		}
-	}
 }

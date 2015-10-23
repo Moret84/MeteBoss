@@ -31,5 +31,10 @@
 				android:value="bosscorp.meteboss.CityListActivity" />
 		</activity>
 
+		<service
+			android:name=".GetData"
+			android:exported="false"/>
+
+
 	</application>
 </manifest>

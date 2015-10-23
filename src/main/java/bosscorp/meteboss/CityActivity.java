@@ -8,7 +8,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.os.AsyncTask;
 
 public class CityActivity extends Activity
 {
@@ -48,7 +47,7 @@ public class CityActivity extends Activity
 
 	private void refreshCurrent()
 	{
-		final GetData geeet = new GetData(this);
+		/*final GetData geeet = new GetData(this);
 		geeet.execute(mCity);
 
 			new Thread()
@@ -61,7 +60,7 @@ public class CityActivity extends Activity
 						@Override
 						public void run()
 						{
-								fillFields();
+							fillFields();
 						}
 					});
 				}
@@ -71,6 +70,7 @@ public class CityActivity extends Activity
 		Intent intent = new Intent();
 		intent.putExtra(CityListActivity.CITY, mCity);
 		setResult(RESULT_OK, intent);
+		*/
 }
 
 @Override

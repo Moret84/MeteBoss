@@ -96,7 +96,9 @@ public class CityListActivity extends ListActivity
 				openAdd();
 				return true;
 			case R.id.refresh:
-				new GetData(this).execute(mCityList.toArray(new City[mCityList.size()]));
+				Bundle bundle = new Bundle();
+				bundle.putSerializable("cities", mCityList);
+				startService(new Intent(this, GetData.class).putExtras(bundle));
 
 			default:
 				return super.onOptionsItemSelected(item);

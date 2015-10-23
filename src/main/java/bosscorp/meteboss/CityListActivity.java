@@ -26,7 +26,7 @@ import java.util.ArrayList;
 
 public class CityListActivity extends ListActivity
 {
-	private ArrayList<City> mCityList = new ArrayList<City>();
+	private List<City> mCityList;
 	private ListView mListView;
 	private ArrayAdapter<City> mAdapter;
 
@@ -55,12 +55,16 @@ public class CityListActivity extends ListActivity
 	{
 		super.onCreate(savedInstanceState);
 
-		mCityList.add(new City("Brest", "France"));
+		/*mCityList.add(new City("Brest", "France"));
 		mCityList.add(new City("Marseille", "France"));
 		mCityList.add(new City("Montreal", "Canada"));
 		mCityList.add(new City("Istanbul", "Turkey"));
 		mCityList.add(new City("Seoul", "Korea"));
-		mCityList.add(new City("Lyon", "France"));
+		mCityList.add(new City("Lyon", "France"));*/
+		HelperQuiPese hQP = new HelperQuiPese(this);
+		hQP.open();
+		hQP.getWritableDatabase();
+		mCityList = hQP.getAllCities();
 
 		mListView = getListView();
 		mAdapter = new ArrayAdapter<City>(this, android.R.layout.simple_list_item_1, android.R.id.text1, mCityList);
@@ -96,9 +100,9 @@ public class CityListActivity extends ListActivity
 				openAdd();
 				return true;
 			case R.id.refresh:
-				Bundle bundle = new Bundle();
+				/*Bundle bundle = new Bundle();
 				bundle.putSerializable("cities", mCityList);
-				startService(new Intent(this, GetData.class).putExtras(bundle));
+				startService(new Intent(this, GetData.class).putExtras(bundle));*/
 
 			default:
 				return super.onOptionsItemSelected(item);

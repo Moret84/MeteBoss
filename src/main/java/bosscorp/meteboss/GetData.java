@@ -1,19 +1,21 @@
 package bosscorp.meteboss;
 
-import android.app.ProgressDialog;
 import android.app.IntentService;
-import android.app.ListActivity;
+import android.content.ContentValues;
 import android.content.Intent;
-import java.util.Arrays;
-import java.util.List;
+import android.net.Uri;
 import android.util.Log;
-import android.widget.Toast;
-import android.content.Context;
+
+import java.util.List;
 
 public class GetData extends IntentService
 {
-	private ProgressDialog mProgress;
 	private IWeatherWSClient mWSClient;
+
+	private static final int WIND = 0;
+	private static final int TEMP = 1;
+	private static final int PRESSURE = 2;
+	private static final int LAST_FETCH = 3;
 
 	public GetData()
 	{
@@ -25,22 +27,27 @@ public class GetData extends IntentService
 		//Change this line to change the web service
 		mWSClient = new WSXGlobalWeatherClient();
 
-		List<City> cities = (List<City>) workIntent.getExtras().getSerializable("cities");
-		for(City c : cities)
+		Uri uri = workIntent.getParcelableExtra("URI");
+
+		List<String> segments = uri.getPathSegments();
+		String city = segments.get(ProviderQuiPese.CITY_SEGMENT);
+		String country = segments.get(ProviderQuiPese.COUNTRY_SEGMENT);
+
+		List<String> results = mWSClient.refresh(city, country);
+
+		if(results != null && results.size() == 4)
 		{
-			Log.e("refreshing", c.getName() + ", " + c.getCountry());
-			List<String> results = mWSClient.refresh(c.getName(), c.getCountry());
-			if(results != null && results.size() == 4)
-			{
-				c.setWind(results.get(0));
-				c.setTemperature(results.get(1));
-				c.setPressure(results.get(2));
-				c.setLastFetch(results.get(3));
-			}
-			else
-			{
-				Log.e("refresh()", "null results for " + c.getName() + ", " + c.getCountry());
-			}
+			ContentValues values = new ContentValues(4);
+			values.put(HelperQuiPese.WIND, results.get(WIND));
+			values.put(HelperQuiPese.TEMPERATURE, results.get(TEMP));
+			values.put(HelperQuiPese.PRESSURE, results.get(PRESSURE));
+			values.put(HelperQuiPese.LAST_FETCH, results.get(LAST_FETCH));
+
+			getContentResolver().update(uri, values, null, null);
+		}
+		else
+		{
+			Log.e("refresh()", "null results for " + city + ", " + country);
 		}
 	}
 }

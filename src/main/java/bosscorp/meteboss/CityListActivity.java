@@ -1,53 +1,85 @@
 package bosscorp.meteboss;
 
-import android.app.ProgressDialog;
 import android.app.ListActivity;
+import android.app.LoaderManager;
+import android.content.CursorLoader;
+import android.content.Intent;
+import android.content.Loader;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.ContextMenu;
-import android.view.View;
-import android.view.MenuItem;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.ListView;
-import android.widget.ArrayAdapter;
+import android.view.View;
 import android.widget.AdapterView;
+import android.widget.CursorAdapter;
+import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.BroadcastReceiver;
-import android.util.Log;
+
 import java.lang.InterruptedException;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.ArrayList;
 
-public class CityListActivity extends ListActivity
+public class CityListActivity extends ListActivity implements LoaderManager.LoaderCallbacks<Cursor>
 {
-	private List<City> mCityList;
-	private ListView mListView;
-	private ArrayAdapter<City> mAdapter;
-
 	public final static String CITY = "bosscorp.meteboss.city";
-	public final static int ADD_CITY = 1;
-	public final static int REFRESH_CURRENT_CITY = 2;
 
 	private void removeCity(int id)
 	{
-		String name = mCityList.get(id).getName();
+		Cursor cursor = ((CursorAdapter) getListView().getAdapter()).getCursor();
+		cursor.moveToPosition(id);
 
-		mCityList.remove(id);
-		mAdapter.notifyDataSetChanged();
+		String city = cursor.getString(cursor.getColumnIndex(HelperQuiPese.NAME));
 
-		Toast.makeText(this, name + getResources().getString(R.string.removeToast), Toast.LENGTH_SHORT).show();
+		getContentResolver().delete
+			(
+				ProviderQuiPese.buildCityUri(city, cursor.getString(cursor.getColumnIndex(HelperQuiPese.COUNTRY))),
+				null, null
+			);
+
+		Toast.makeText(this, city + getResources().getString(R.string.removeToast), Toast.LENGTH_SHORT).show();
 	}
 
 	private void openAdd()
 	{
 		Intent intent = new Intent(this, AddCityActivity.class);
-		startActivityForResult(intent, ADD_CITY);
+		startActivity(intent);
+	}
+
+	private void refreshAll()
+	{
+		Cursor c = getContentResolver().query(ProviderQuiPese.getAllCitiesUri(), null, null, null, null);
+
+		while (c.moveToNext())
+		{
+			Intent intent = new Intent(this, GetData.class);
+			String city = c.getString(c.getColumnIndex(HelperQuiPese.NAME));
+			String country = c.getString(c.getColumnIndex(HelperQuiPese.COUNTRY));
+			intent.putExtra("URI", ProviderQuiPese.buildCityUri(city, country));
+			startService(intent);
+		}
+	}
+
+	@Override
+	public Loader<Cursor> onCreateLoader(int id, Bundle args)
+	{
+		return new CursorLoader(this, ProviderQuiPese.CONTENT_URI, null, null, null, null);
+	}
+
+	@Override
+	public void onLoadFinished(Loader<Cursor> loader, Cursor data)
+	{
+		((CursorAdapter) getListView().getAdapter()).swapCursor(data);
+	}
+
+	@Override
+	public void onLoaderReset(Loader<Cursor> loader)
+	{
+		((CursorAdapter) getListView().getAdapter()).swapCursor(null);
 	}
 
 	@Override
@@ -55,31 +87,38 @@ public class CityListActivity extends ListActivity
 	{
 		super.onCreate(savedInstanceState);
 
-		/*mCityList.add(new City("Brest", "France"));
-		mCityList.add(new City("Marseille", "France"));
-		mCityList.add(new City("Montreal", "Canada"));
-		mCityList.add(new City("Istanbul", "Turkey"));
-		mCityList.add(new City("Seoul", "Korea"));
-		mCityList.add(new City("Lyon", "France"));*/
-		HelperQuiPese hQP = new HelperQuiPese(this);
-		hQP.open();
-		hQP.getWritableDatabase();
-		mCityList = hQP.getAllCities();
+		getLoaderManager().initLoader(0, null, this);
 
-		mListView = getListView();
-		mAdapter = new ArrayAdapter<City>(this, android.R.layout.simple_list_item_1, android.R.id.text1, mCityList);
+		setListAdapter(
+				new SimpleCursorAdapter(this,
+					android.R.layout.simple_list_item_2,
+					null,
+					new String[]{HelperQuiPese.NAME, HelperQuiPese.COUNTRY},
+					new int[]{android.R.id.text1, android.R.id.text2},
+					0)
+				);
 
-		mListView.setAdapter(mAdapter);
-		registerForContextMenu(mListView);
+		registerForContextMenu(getListView());
 	}
 
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id)
 	{
 		Intent intent = new Intent(this, CityActivity.class);
-		City selectedCity = mCityList.get(position);
-		intent.putExtra(CITY, selectedCity);
-		startActivityForResult(intent, REFRESH_CURRENT_CITY);
+		Cursor cursor = ((CursorAdapter) l.getAdapter()).getCursor();
+		cursor.moveToPosition(position);
+
+		intent.putExtra
+		(
+				CITY,
+				ProviderQuiPese.buildCityUri
+				(
+					cursor.getString(cursor.getColumnIndex(HelperQuiPese.NAME)),
+					cursor.getString(cursor.getColumnIndex(HelperQuiPese.COUNTRY))
+				)
+		);
+
+		startActivity(intent);
 	}
 
 	@Override
@@ -90,7 +129,6 @@ public class CityListActivity extends ListActivity
 		return super.onCreateOptionsMenu(menu);
 	}
 
-
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
@@ -100,44 +138,11 @@ public class CityListActivity extends ListActivity
 				openAdd();
 				return true;
 			case R.id.refresh:
-				/*Bundle bundle = new Bundle();
-				bundle.putSerializable("cities", mCityList);
-				startService(new Intent(this, GetData.class).putExtras(bundle));*/
+				refreshAll();
+				return true;
 
 			default:
 				return super.onOptionsItemSelected(item);
-		}
-	}
-
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data)
-	{
-		if (resultCode == RESULT_OK)
-		{
-			City city = (City) data.getSerializableExtra(CITY);
-
-			switch(requestCode)
-			{
-				case ADD_CITY:
-					mCityList.add(city);
-					mAdapter.notifyDataSetChanged();
-				case REFRESH_CURRENT_CITY:
-					if(city != null)
-					{
-						ListIterator<City> it = mCityList.listIterator();
-						City c;
-						while (it.hasNext())
-						{
-							c = it.next();
-							if(c.getName().equals(city.getName()) && c.getCountry().equals(city.getCountry()))
-							{
-								System.out.println("Ça pèse");
-								it.set(city);
-								mAdapter.notifyDataSetChanged();
-							}
-						}
-					}
-			}
 		}
 	}
 
@@ -157,5 +162,4 @@ public class CityListActivity extends ListActivity
 			return false;
 		return true;
 	}
-
 }

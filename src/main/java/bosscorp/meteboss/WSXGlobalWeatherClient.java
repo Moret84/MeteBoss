@@ -33,7 +33,6 @@ public class WSXGlobalWeatherClient implements IWeatherWSClient
 			InputStream response = connection.getInputStream();
 
 			return xmlResponseHandler.handleResponse(response, ENCODING);
-
 		}
 		catch(Exception e)
 		{

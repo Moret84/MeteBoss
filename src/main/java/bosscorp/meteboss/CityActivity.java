@@ -1,38 +1,41 @@
 package bosscorp.meteboss;
 
 import android.app.Activity;
-import android.os.Bundle;
+import android.app.LoaderManager;
+import android.content.CursorLoader;
 import android.content.Intent;
-import android.widget.TextView;
+import android.content.Loader;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
+import android.widget.TextView;
 
-public class CityActivity extends Activity
+public class CityActivity extends Activity implements LoaderManager.LoaderCallbacks<Cursor>
 {
+	private Uri mUri;
 
-	private City mCity;
-
-	private void fillFields()
+	private void fillFields(City city)
 	{
 		TextView text = (TextView) findViewById(R.id.cityValue);
-		text.setText(mCity.getName());
+		text.setText(city.getName());
 
 		text = (TextView) findViewById(R.id.countryValue);
-		text.setText(mCity.getCountry());
+		text.setText(city.getCountry());
 
 		text = (TextView) findViewById(R.id.windValue);
-		text.setText(mCity.getWind());
+		text.setText(city.getWind());
 
 		text = (TextView) findViewById(R.id.pressureValue);
-		text.setText(mCity.getPressure());
+		text.setText(city.getPressure());
 
 		text = (TextView) findViewById(R.id.temperatureValue);
-		text.setText(mCity.getTemperature());
+		text.setText(city.getTemperature());
 
 		text = (TextView) findViewById(R.id.lastUpdateValue);
-		text.setText(mCity.getLastUpdate());
+		text.setText(city.getLastUpdate());
 	}
 
 	@Override
@@ -41,58 +44,56 @@ public class CityActivity extends Activity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.city_view);
 
-		mCity = (City) getIntent().getSerializableExtra(CityListActivity.CITY);
-		fillFields();
+		mUri = (Uri) getIntent().getParcelableExtra(CityListActivity.CITY);
+		getLoaderManager().initLoader(0, null, this);
 	}
 
 	private void refreshCurrent()
 	{
-		/*final GetData geeet = new GetData(this);
-		geeet.execute(mCity);
+		Intent intent = new Intent(this, GetData.class);
+		intent.putExtra("URI", mUri);
+		startService(intent);
 
-			new Thread()
-			{
-				public void run()
-				{
-					while(geeet.getStatus() != AsyncTask.Status.FINISHED);
-					runOnUiThread(new Runnable()
-					{
-						@Override
-						public void run()
-						{
-							fillFields();
-						}
-					});
-				}
-			}.start();
-
-		fillFields();
-		Intent intent = new Intent();
-		intent.putExtra(CityListActivity.CITY, mCity);
-		setResult(RESULT_OK, intent);
-		*/
-}
-
-@Override
-public boolean onCreateOptionsMenu(Menu menu)
-{
-	MenuInflater inflater = getMenuInflater();
-	inflater.inflate(R.menu.menu, menu);
-	invalidateOptionsMenu();
-	menu.findItem(R.id.addCity).setVisible(false);
-	return super.onCreateOptionsMenu(menu);
-}
-
-@Override
-public boolean onOptionsItemSelected(MenuItem item)
-{
-	switch (item.getItemId())
-	{
-		case R.id.refresh:
-			refreshCurrent();
-
-		default:
-			return super.onOptionsItemSelected(item);
 	}
-}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu)
+	{
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.menu, menu);
+		invalidateOptionsMenu();
+		menu.findItem(R.id.addCity).setVisible(false);
+		return super.onCreateOptionsMenu(menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+		switch (item.getItemId())
+		{
+			case R.id.refresh:
+				refreshCurrent();
+
+			default:
+				return super.onOptionsItemSelected(item);
+		}
+	}
+
+	@Override
+	public Loader<Cursor> onCreateLoader(int id, Bundle args)
+	{
+		return new CursorLoader(this, mUri, null, null, null, null);
+	}
+
+	@Override
+	public void onLoadFinished(Loader<Cursor> loader, Cursor data)
+	{
+		if(data != null && data.moveToFirst())
+			fillFields(new City(data));
+	}
+
+	@Override
+	public void onLoaderReset(Loader<Cursor> loader)
+	{
+	}
 }

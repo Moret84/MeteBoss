@@ -31,6 +31,12 @@
 				android:value="bosscorp.meteboss.CityListActivity" />
 		</activity>
 
+		<provider
+			android:name=".ProviderQuiPese"
+			android:authorities="bosscorp.meteboss"
+			android:enabled="true"
+			android:exported="false" />
+
 		<service
 			android:name=".GetData"
 			android:exported="false"/>

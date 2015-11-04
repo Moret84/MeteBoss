@@ -1,5 +1,6 @@
 package bosscorp.meteboss;
 
+import android.database.Cursor;
 import java.util.Date;
 import java.io.Serializable;
 
@@ -11,6 +12,16 @@ public class City implements Serializable
 	private String mWind;
 	private String mPressure;
 	private String mTemperature;
+
+	public City(Cursor c)
+	{
+		setName(c.getString(c.getColumnIndex(HelperQuiPese.NAME)));
+		setCountry(c.getString(c.getColumnIndex(HelperQuiPese.COUNTRY)));
+		setTemperature(c.getString(c.getColumnIndex(HelperQuiPese.TEMPERATURE)));
+		setWind(c.getString(c.getColumnIndex(HelperQuiPese.WIND)));
+		setPressure(c.getString(c.getColumnIndex(HelperQuiPese.PRESSURE)));
+		setLastFetch(c.getString(c.getColumnIndex(HelperQuiPese.LAST_FETCH)));
+	}
 
 	public City(String name, String country)
 	{

@@ -1,24 +1,18 @@
 package bosscorp.meteboss;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
-import android.content.Intent;
-import android.widget.TextView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Context;
 
 public class AddCityActivity extends Activity
 {
 	private void addCity(String cityName, String countryName)
 	{
-		City city = new City(cityName, countryName);
-		Intent intent = new Intent(this, CityListActivity.class);
-		intent.putExtra(CityListActivity.CITY, city);
-		setResult(Activity.RESULT_OK, intent);
+		getContentResolver().insert(ProviderQuiPese.buildCityUri(cityName, countryName), null);
 		finish();
 	}
 
